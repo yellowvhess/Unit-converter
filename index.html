@@ -4,12 +4,13 @@
     <meta name="google-site-verification" content="rd3e2zvgvc_FYIuSOG01MEmWKf7cFx-92v6ptVrp_tM" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конвертер валют | Yellow Vhess Company</title>
+    <title>Конвертер единиц | Yellow Vhess Company</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #3498db;
             --secondary: #2ecc71;
+            --accent: #9b59b6;
             --dark: #2c3e50;
             --light: #ecf0f1;
             --gray: #95a5a6;
@@ -60,7 +61,7 @@
             border-radius: 50px;
             margin: 15px auto;
             width: 90%;
-            max-width: 350px;
+            max-width: 500px;
             overflow: hidden;
         }
 
@@ -73,6 +74,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 14px;
         }
 
         .view-toggle button.active {
@@ -106,7 +108,7 @@
             padding: 30px;
         }
 
-        .converter-view, .rates-view {
+        .converter-view, .rates-view, .units-view {
             display: none;
         }
 
@@ -139,7 +141,7 @@
             outline: none;
         }
 
-        .currency-selectors {
+        .currency-selectors, .unit-selectors {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
@@ -183,6 +185,24 @@
             background: #2980b9;
         }
 
+        .unit-convert-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .unit-convert-btn:hover {
+            background: #8e44ad;
+        }
+
         .result {
             background: #f8f9fa;
             padding: 20px;
@@ -196,6 +216,22 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
+        }
+
+        .unit-result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-bottom: 20px;
         }
 
         .result small {
@@ -434,8 +470,22 @@
             color: var(--gray);
         }
 
+        .unit-category {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .unit-category h3 {
+            margin-bottom: 15px;
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 8px;
+        }
+
         @media (max-width: 768px) {
-            .currency-selectors {
+            .currency-selectors, .unit-selectors {
                 grid-template-columns: 1fr;
             }
             
@@ -456,16 +506,22 @@
             .history-panel {
                 max-width: 100%;
             }
+            
+            .view-toggle button {
+                font-size: 12px;
+                padding: 8px 5px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Конвертер валют</h1>
+            <h1>Конвертер единиц</h1>
             <div class="view-toggle">
-                <button id="converter-toggle" class="active">Конвертор</button>
+                <button id="converter-toggle" class="active">Конвертор валют</button>
                 <button id="rates-toggle">Актуальный курс валют</button>
+                <button id="units-toggle">Конвертер единиц</button>
             </div>
             <button class="history-btn" id="history-btn">
                 <i class="fas fa-history"></i>
@@ -509,6 +565,108 @@
                     <!-- Курсы валют будут загружены здесь -->
                 </div>
                 <div class="loader" id="rates-loader"></div>
+            </div>
+            
+            <div class="units-view">
+                <h2>Конвертер единиц измерения</h2>
+                
+                <div class="unit-category">
+                    <h3>Длина</h3>
+                    <div class="input-group">
+                        <label for="length-amount">Значение</label>
+                        <input type="number" id="length-amount" placeholder="Введите значение" step="0.01">
+                    </div>
+                    <div class="unit-selectors">
+                        <div>
+                            <label for="from-unit-length">Из единицы</label>
+                            <select id="from-unit-length">
+                                <option value="mm">Миллиметры</option>
+                                <option value="cm">Сантиметры</option>
+                                <option value="m">Метры</option>
+                                <option value="km">Километры</option>
+                                <option value="ft">Футы</option>
+                                <option value="yd">Ярды</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="to-unit-length">В единицу</label>
+                            <select id="to-unit-length">
+                                <option value="mm">Миллиметры</option>
+                                <option value="cm">Сантиметры</option>
+                                <option value="m">Метры</option>
+                                <option value="km">Километры</option>
+                                <option value="ft">Футы</option>
+                                <option value="yd">Ярды</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="unit-convert-btn" id="convert-length-btn">Конвертировать длину</button>
+                    <div class="unit-result" id="length-result">
+                        Результат появится здесь
+                    </div>
+                </div>
+                
+                <div class="unit-category">
+                    <h3>Вес</h3>
+                    <div class="input-group">
+                        <label for="weight-amount">Значение</label>
+                        <input type="number" id="weight-amount" placeholder="Введите значение" step="0.01">
+                    </div>
+                    <div class="unit-selectors">
+                        <div>
+                            <label for="from-unit-weight">Из единицы</label>
+                            <select id="from-unit-weight">
+                                <option value="mg">Миллиграммы</option>
+                                <option value="g">Граммы</option>
+                                <option value="kg">Килограммы</option>
+                                <option value="cwt">Центнеры</option>
+                                <option value="t">Тонны</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="to-unit-weight">В единицу</label>
+                            <select id="to-unit-weight">
+                                <option value="mg">Миллиграммы</option>
+                                <option value="g">Граммы</option>
+                                <option value="kg">Килограммы</option>
+                                <option value="cwt">Центнеры</option>
+                                <option value="t">Тонны</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="unit-convert-btn" id="convert-weight-btn">Конвертировать вес</button>
+                    <div class="unit-result" id="weight-result">
+                        Результат появится здесь
+                    </div>
+                </div>
+                
+                <div class="unit-category">
+                    <h3>Температура</h3>
+                    <div class="input-group">
+                        <label for="temp-amount">Значение</label>
+                        <input type="number" id="temp-amount" placeholder="Введите значение" step="0.01">
+                    </div>
+                    <div class="unit-selectors">
+                        <div>
+                            <label for="from-unit-temp">Из единицы</label>
+                            <select id="from-unit-temp">
+                                <option value="c">Градусы Цельсия</option>
+                                <option value="f">Градусы Фаренгейта</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="to-unit-temp">В единицу</label>
+                            <select id="to-unit-temp">
+                                <option value="c">Градусы Цельсия</option>
+                                <option value="f">Градусы Фаренгейта</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="unit-convert-btn" id="convert-temp-btn">Конвертировать температуру</button>
+                    <div class="unit-result" id="temp-result">
+                        Результат появится здесь
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -556,8 +714,10 @@
             const ratesGrid = document.getElementById('rates-grid');
             const converterView = document.querySelector('.converter-view');
             const ratesView = document.querySelector('.rates-view');
+            const unitsView = document.querySelector('.units-view');
             const converterToggle = document.getElementById('converter-toggle');
             const ratesToggle = document.getElementById('rates-toggle');
+            const unitsToggle = document.getElementById('units-toggle');
             const supportBtn = document.getElementById('support-btn');
             const supportPanel = document.getElementById('support-panel');
             const emailLink = document.getElementById('email-link');
@@ -566,6 +726,23 @@
             const historyPanel = document.getElementById('history-panel');
             const closeHistory = document.getElementById('close-history');
             const historyList = document.getElementById('history-list');
+            
+            // Элементы для конвертера единиц
+            const lengthAmountInput = document.getElementById('length-amount');
+            const weightAmountInput = document.getElementById('weight-amount');
+            const tempAmountInput = document.getElementById('temp-amount');
+            const fromUnitLength = document.getElementById('from-unit-length');
+            const toUnitLength = document.getElementById('to-unit-length');
+            const fromUnitWeight = document.getElementById('from-unit-weight');
+            const toUnitWeight = document.getElementById('to-unit-weight');
+            const fromUnitTemp = document.getElementById('from-unit-temp');
+            const toUnitTemp = document.getElementById('to-unit-temp');
+            const convertLengthBtn = document.getElementById('convert-length-btn');
+            const convertWeightBtn = document.getElementById('convert-weight-btn');
+            const convertTempBtn = document.getElementById('convert-temp-btn');
+            const lengthResultDiv = document.getElementById('length-result');
+            const weightResultDiv = document.getElementById('weight-result');
+            const tempResultDiv = document.getElementById('temp-result');
             
             // Коды и названия валют
             const currencies = {
@@ -586,6 +763,27 @@
                 "AED": "Дирхам ОАЭ",
                 "EGP": "Египетский фунт",
                 "UAH": "Украинская гривна"
+            };
+            
+            // Коэффициенты преобразования единиц
+            const unitConversions = {
+                // Длина
+                length: {
+                    mm: 1,
+                    cm: 10,
+                    m: 1000,
+                    km: 1000000,
+                    ft: 304.8,
+                    yd: 914.4
+                },
+                // Вес
+                weight: {
+                    mg: 1,
+                    g: 1000,
+                    kg: 1000000,
+                    cwt: 100000000,
+                    t: 1000000000
+                }
             };
             
             let exchangeRates = {};
@@ -747,7 +945,151 @@
                 saveUserPreferences();
                 
                 // Сохраняем конвертацию в историю
-                saveToHistory(amount, fromCurrency, toCurrency, result, rate);
+                saveToHistory(amount, fromCurrency, toCurrency, result, rate, 'currency');
+            }
+            
+            // Конвертация единиц измерения - Длина
+            function convertLength() {
+                const amount = parseFloat(lengthAmountInput.value);
+                
+                if (isNaN(amount)) {
+                    lengthResultDiv.innerHTML = 'Пожалуйста, введите корректное значение';
+                    return;
+                }
+                
+                const fromUnit = fromUnitLength.value;
+                const toUnit = toUnitLength.value;
+                
+                const fromFactor = unitConversions.length[fromUnit];
+                const toFactor = unitConversions.length[toUnit];
+                const result = amount * (fromFactor / toFactor);
+                
+                // Форматирование результата
+                const formattedAmount = new Intl.NumberFormat('ru-RU', {
+                    maximumFractionDigits: 6
+                }).format(amount);
+                
+                const formattedResult = new Intl.NumberFormat('ru-RU', {
+                    maximumFractionDigits: 6
+                }).format(result);
+                
+                // Получаем названия единиц
+                const fromUnitName = getUnitName(fromUnit, 'length');
+                const toUnitName = getUnitName(toUnit, 'length');
+                
+                lengthResultDiv.innerHTML = `
+                    ${formattedAmount} ${fromUnitName} = ${formattedResult} ${toUnitName}
+                `;
+                
+                // Сохраняем конвертацию в историю
+                saveToHistory(amount, fromUnitName, toUnitName, result, 0, 'unit');
+            }
+            
+            // Конвертация единиц измерения - Вес
+            function convertWeight() {
+                const amount = parseFloat(weightAmountInput.value);
+                
+                if (isNaN(amount)) {
+                    weightResultDiv.innerHTML = 'Пожалуйста, введите корректное значение';
+                    return;
+                }
+                
+                const fromUnit = fromUnitWeight.value;
+                const toUnit = toUnitWeight.value;
+                
+                const fromFactor = unitConversions.weight[fromUnit];
+                const toFactor = unitConversions.weight[toUnit];
+                const result = amount * (fromFactor / toFactor);
+                
+                // Форматирование результата
+                const formattedAmount = new Intl.NumberFormat('ru-RU', {
+                    maximumFractionDigits: 6
+                }).format(amount);
+                
+                const formattedResult = new Intl.NumberFormat('ru-RU', {
+                    maximumFractionDigits: 6
+                }).format(result);
+                
+                // Получаем названия единиц
+                const fromUnitName = getUnitName(fromUnit, 'weight');
+                const toUnitName = getUnitName(toUnit, 'weight');
+                
+                weightResultDiv.innerHTML = `
+                    ${formattedAmount} ${fromUnitName} = ${formattedResult} ${toUnitName}
+                `;
+                
+                // Сохраняем конвертацию в историю
+                saveToHistory(amount, fromUnitName, toUnitName, result, 0, 'unit');
+            }
+            
+            // Конвертация единиц измерения - Температура
+            function convertTemperature() {
+                const amount = parseFloat(tempAmountInput.value);
+                
+                if (isNaN(amount)) {
+                    tempResultDiv.innerHTML = 'Пожалуйста, введите корректное значение';
+                    return;
+                }
+                
+                const fromUnit = fromUnitTemp.value;
+                const toUnit = toUnitTemp.value;
+                
+                let result;
+                
+                if (fromUnit === 'c' && toUnit === 'f') {
+                    result = (amount * 9/5) + 32;
+                } else if (fromUnit === 'f' && toUnit === 'c') {
+                    result = (amount - 32) * 5/9;
+                } else {
+                    result = amount; // Если одинаковые единицы
+                }
+                
+                // Форматирование результата
+                const formattedAmount = new Intl.NumberFormat('ru-RU', {
+                    maximumFractionDigits: 2
+                }).format(amount);
+                
+                const formattedResult = new Intl.NumberFormat('ru-RU', {
+                    maximumFractionDigits: 2
+                }).format(result);
+                
+                // Получаем названия единиц
+                const fromUnitName = getUnitName(fromUnit, 'temperature');
+                const toUnitName = getUnitName(toUnit, 'temperature');
+                
+                tempResultDiv.innerHTML = `
+                    ${formattedAmount} ${fromUnitName} = ${formattedResult} ${toUnitName}
+                `;
+                
+                // Сохраняем конвертацию в историю
+                saveToHistory(amount, fromUnitName, toUnitName, result, 0, 'unit');
+            }
+            
+            // Получение названия единицы измерения
+            function getUnitName(unitCode, category) {
+                const unitNames = {
+                    length: {
+                        mm: 'мм',
+                        cm: 'см',
+                        m: 'м',
+                        km: 'км',
+                        ft: 'футов',
+                        yd: 'ярдов'
+                    },
+                    weight: {
+                        mg: 'мг',
+                        g: 'г',
+                        kg: 'кг',
+                        cwt: 'ц',
+                        t: 'т'
+                    },
+                    temperature: {
+                        c: '°C',
+                        f: '°F'
+                    }
+                };
+                
+                return unitNames[category][unitCode];
             }
             
             // Получение символа валюты
@@ -767,16 +1109,17 @@
             }
             
             // Сохранение конвертации в историю
-            function saveToHistory(amount, fromCurrency, toCurrency, result, rate) {
+            function saveToHistory(amount, fromUnit, toUnit, result, rate, type = 'currency') {
                 let history = JSON.parse(localStorage.getItem('conversionHistory')) || [];
                 
                 const conversion = {
                     date: new Date().toLocaleString('ru-RU'),
-                    fromCurrency,
-                    toCurrency,
+                    fromUnit,
+                    toUnit,
                     amount,
                     result,
-                    rate
+                    rate,
+                    type
                 };
                 
                 history.unshift(conversion);
@@ -804,28 +1147,50 @@
                 let historyHTML = '';
                 
                 history.forEach(item => {
-                    const fromSymbol = getCurrencySymbol(item.fromCurrency);
-                    const toSymbol = getCurrencySymbol(item.toCurrency);
-                    
-                    // Форматирование чисел с разделителями тысяч
-                    const formattedAmount = new Intl.NumberFormat('ru-RU', {
-                        maximumFractionDigits: 2
-                    }).format(item.amount);
-                    
-                    const formattedResult = new Intl.NumberFormat('ru-RU', {
-                        maximumFractionDigits: 2
-                    }).format(item.result);
-                    
-                    historyHTML += `
-                        <div class="history-item">
-                            <div class="history-date">${item.date}</div>
-                            <div class="history-currencies">${item.fromCurrency} → ${item.toCurrency}</div>
-                            <div class="history-amounts">
-                                <span>${fromSymbol}${formattedAmount}</span>
-                                <span>${toSymbol}${formattedResult}</span>
+                    if (item.type === 'currency') {
+                        const fromSymbol = getCurrencySymbol(item.fromUnit);
+                        const toSymbol = getCurrencySymbol(item.toUnit);
+                        
+                        // Форматирование чисел с разделителями тысяч
+                        const formattedAmount = new Intl.NumberFormat('ru-RU', {
+                            maximumFractionDigits: 2
+                        }).format(item.amount);
+                        
+                        const formattedResult = new Intl.NumberFormat('ru-RU', {
+                            maximumFractionDigits: 2
+                        }).format(item.result);
+                        
+                        historyHTML += `
+                            <div class="history-item">
+                                <div class="history-date">${item.date}</div>
+                                <div class="history-currencies">${item.fromUnit} → ${item.toUnit}</div>
+                                <div class="history-amounts">
+                                    <span>${fromSymbol}${formattedAmount}</span>
+                                    <span>${toSymbol}${formattedResult}</span>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    } else {
+                        // Форматирование чисел с разделителями тысяч
+                        const formattedAmount = new Intl.NumberFormat('ru-RU', {
+                            maximumFractionDigits: 6
+                        }).format(item.amount);
+                        
+                        const formattedResult = new Intl.NumberFormat('ru-RU', {
+                            maximumFractionDigits: 6
+                        }).format(item.result);
+                        
+                        historyHTML += `
+                            <div class="history-item">
+                                <div class="history-date">${item.date}</div>
+                                <div class="history-currencies">${item.fromUnit} → ${item.toUnit}</div>
+                                <div class="history-amounts">
+                                    <span>${formattedAmount} ${item.fromUnit}</span>
+                                    <span>${formattedResult} ${item.toUnit}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
                 });
                 
                 historyList.innerHTML = historyHTML;
@@ -841,8 +1206,36 @@
                 loaderElement.style.display = 'none';
             }
             
+            // Переключение между вкладками
+            function switchView(view) {
+                // Сброс активных классов
+                converterToggle.classList.remove('active');
+                ratesToggle.classList.remove('active');
+                unitsToggle.classList.remove('active');
+                
+                converterView.classList.remove('view-active');
+                ratesView.classList.remove('view-active');
+                unitsView.classList.remove('view-active');
+                
+                // Установка активного класса и отображение соответствующего вида
+                if (view === 'converter') {
+                    converterToggle.classList.add('active');
+                    converterView.classList.add('view-active');
+                } else if (view === 'rates') {
+                    ratesToggle.classList.add('active');
+                    ratesView.classList.add('view-active');
+                    updateRates();
+                } else if (view === 'units') {
+                    unitsToggle.classList.add('active');
+                    unitsView.classList.add('view-active');
+                }
+            }
+            
             // События
             convertBtn.addEventListener('click', convertCurrency);
+            convertLengthBtn.addEventListener('click', convertLength);
+            convertWeightBtn.addEventListener('click', convertWeight);
+            convertTempBtn.addEventListener('click', convertTemperature);
             
             swapBtn.addEventListener('click', function() {
                 const temp = fromCurrencySelect.value;
@@ -851,22 +1244,9 @@
                 saveUserPreferences();
             });
             
-            converterToggle.addEventListener('click', function() {
-                converterToggle.classList.add('active');
-                ratesToggle.classList.remove('active');
-                converterView.classList.add('view-active');
-                ratesView.classList.remove('view-active');
-            });
-            
-            ratesToggle.addEventListener('click', function() {
-                ratesToggle.classList.add('active');
-                converterToggle.classList.remove('active');
-                ratesView.classList.add('view-active');
-                converterView.classList.remove('view-active');
-                
-                // Обновляем курсы при переключении на вкладку
-                updateRates();
-            });
+            converterToggle.addEventListener('click', () => switchView('converter'));
+            ratesToggle.addEventListener('click', () => switchView('rates'));
+            unitsToggle.addEventListener('click', () => switchView('units'));
             
             supportBtn.addEventListener('click', function() {
                 supportPanel.classList.toggle('active');
@@ -895,5 +1275,4 @@
         });
     </script>
 </body>
-
 </html>
