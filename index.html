@@ -108,7 +108,7 @@
             padding: 30px;
         }
 
-        .converter-view, .rates-view, .units-view {
+        .converter-view, .rates-view, .units-view, .invest-view {
             display: none;
         }
 
@@ -484,6 +484,85 @@
             padding-bottom: 8px;
         }
 
+        /* Стили для раздела инвестиций */
+        .invest-form {
+            margin-bottom: 25px;
+        }
+
+        .invest-result {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .invest-chart {
+            width: 100%;
+            height: 300px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .chart-bars {
+            display: flex;
+            height: 250px;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding: 0 10px;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .chart-bar {
+            width: 30px;
+            background: var(--primary);
+            margin: 0 5px;
+            position: relative;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease;
+        }
+
+        .chart-bar-initial {
+            background: var(--secondary);
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+            font-size: 12px;
+        }
+
+        .chart-label {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            text-align: center;
+            width: 30px;
+            margin: 0 5px;
+        }
+
+        .invest-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
         @media (max-width: 768px) {
             .currency-selectors, .unit-selectors {
                 grid-template-columns: 1fr;
@@ -511,6 +590,18 @@
                 font-size: 12px;
                 padding: 8px 5px;
             }
+            
+            .invest-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-bars {
+                overflow-x: auto;
+            }
+            
+            .chart-bar {
+                min-width: 20px;
+            }
         }
     </style>
 </head>
@@ -522,6 +613,7 @@
                 <button id="converter-toggle" class="active">Конвертор валют</button>
                 <button id="rates-toggle">Актуальный курс валют</button>
                 <button id="units-toggle">Конвертер единиц</button>
+                <button id="invest-toggle">Магия инвестиций</button>
             </div>
             <button class="history-btn" id="history-btn">
                 <i class="fas fa-history"></i>
@@ -668,6 +760,62 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="invest-view">
+                <h2>Калькулятор сложных процентов</h2>
+                <p>Узнайте, как ваши инвестиции могут расти со временем</p>
+                
+                <div class="invest-form">
+                    <div class="input-group">
+                        <label for="initial-amount">Начальная сумма</label>
+                        <input type="number" id="initial-amount" placeholder="Введите сумму" min="0" step="100">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="interest-rate">Годовая процентная ставка (%)</label>
+                        <input type="number" id="interest-rate" placeholder="Введите ставку" min="0" step="0.1">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="investment-period">Срок инвестирования (лет)</label>
+                        <input type="number" id="investment-period" placeholder="Введите срок" min="1" max="50" step="1">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="monthly-contribution">Ежемесячное пополнение (необязательно)</label>
+                        <input type="number" id="monthly-contribution" placeholder="Введите сумму" min="0" step="100">
+                    </div>
+                    
+                    <button class="convert-btn" id="calculate-invest-btn">Рассчитать</button>
+                </div>
+                
+                <div class="invest-result" id="invest-result">
+                    <h3>Результаты инвестирования</h3>
+                    <div class="invest-summary">
+                        <div class="summary-card">
+                            <div>Начальные инвестиции</div>
+                            <div class="summary-value" id="initial-investment">0 ₽</div>
+                        </div>
+                        <div class="summary-card">
+                            <div>Итоговая сумма</div>
+                            <div class="summary-value" id="final-amount">0 ₽</div>
+                        </div>
+                        <div class="summary-card">
+                            <div>Доход от процентов</div>
+                            <div class="summary-value" id="interest-earned">0 ₽</div>
+                        </div>
+                        <div class="summary-card">
+                            <div>Общие пополнения</div>
+                            <div class="summary-value" id="total-contributions">0 ₽</div>
+                        </div>
+                    </div>
+                    
+                    <div class="invest-chart" id="invest-chart">
+                        <div class="chart-bars" id="chart-bars"></div>
+                        <div class="chart-labels" id="chart-labels"></div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
     
@@ -715,9 +863,11 @@
             const converterView = document.querySelector('.converter-view');
             const ratesView = document.querySelector('.rates-view');
             const unitsView = document.querySelector('.units-view');
+            const investView = document.querySelector('.invest-view');
             const converterToggle = document.getElementById('converter-toggle');
             const ratesToggle = document.getElementById('rates-toggle');
             const unitsToggle = document.getElementById('units-toggle');
+            const investToggle = document.getElementById('invest-toggle');
             const supportBtn = document.getElementById('support-btn');
             const supportPanel = document.getElementById('support-panel');
             const emailLink = document.getElementById('email-link');
@@ -743,6 +893,19 @@
             const lengthResultDiv = document.getElementById('length-result');
             const weightResultDiv = document.getElementById('weight-result');
             const tempResultDiv = document.getElementById('temp-result');
+            
+            // Элементы для калькулятора инвестиций
+            const initialAmountInput = document.getElementById('initial-amount');
+            const interestRateInput = document.getElementById('interest-rate');
+            const investmentPeriodInput = document.getElementById('investment-period');
+            const monthlyContributionInput = document.getElementById('monthly-contribution');
+            const calculateInvestBtn = document.getElementById('calculate-invest-btn');
+            const initialInvestmentEl = document.getElementById('initial-investment');
+            const finalAmountEl = document.getElementById('final-amount');
+            const interestEarnedEl = document.getElementById('interest-earned');
+            const totalContributionsEl = document.getElementById('total-contributions');
+            const chartBarsEl = document.getElementById('chart-bars');
+            const chartLabelsEl = document.getElementById('chart-labels');
             
             // Коды и названия валют
             const currencies = {
@@ -1065,6 +1228,140 @@
                 saveToHistory(amount, fromUnitName, toUnitName, result, 0, 'unit');
             }
             
+            // Расчет инвестиций
+            function calculateInvestment() {
+                const initialAmount = parseFloat(initialAmountInput.value) || 0;
+                const interestRate = parseFloat(interestRateInput.value) || 0;
+                const years = parseInt(investmentPeriodInput.value) || 0;
+                const monthlyContribution = parseFloat(monthlyContributionInput.value) || 0;
+                
+                if (initialAmount <= 0 || interestRate <= 0 || years <= 0) {
+                    alert('Пожалуйста, введите корректные значения для начальной суммы, процентной ставки и срока инвестирования.');
+                    return;
+                }
+                
+                // Расчет сложных процентов с ежемесячными пополнениями
+                const monthlyRate = interestRate / 100 / 12;
+                const months = years * 12;
+                let totalAmount = initialAmount;
+                let totalContributions = initialAmount;
+                
+                // Массив для хранения данных по годам для графика
+                const yearlyData = [{
+                    year: 0,
+                    amount: initialAmount,
+                    contributions: initialAmount,
+                    interest: 0
+                }];
+                
+                // Расчет по месяцам
+                for (let month = 1; month <= months; month++) {
+                    // Начисление процентов
+                    const monthlyInterest = totalAmount * monthlyRate;
+                    totalAmount += monthlyInterest;
+                    
+                    // Добавление ежемесячного пополнения
+                    totalAmount += monthlyContribution;
+                    totalContributions += monthlyContribution;
+                    
+                    // Запись данных по годам
+                    if (month % 12 === 0) {
+                        const year = month / 12;
+                        yearlyData.push({
+                            year: year,
+                            amount: totalAmount,
+                            contributions: totalContributions,
+                            interest: totalAmount - totalContributions
+                        });
+                    }
+                }
+                
+                // Обновление UI с результатами
+                updateInvestmentResults(initialAmount, totalAmount, totalContributions, yearlyData);
+                
+                // Сохранение в историю
+                saveToInvestmentHistory(initialAmount, interestRate, years, monthlyContribution, totalAmount);
+            }
+            
+            // Обновление результатов инвестирования
+            function updateInvestmentResults(initialAmount, finalAmount, totalContributions, yearlyData) {
+                const interestEarned = finalAmount - totalContributions;
+                
+                // Форматирование чисел
+                const formatter = new Intl.NumberFormat('ru-RU', {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2
+                });
+                
+                initialInvestmentEl.textContent = formatter.format(initialAmount) + ' ₽';
+                finalAmountEl.textContent = formatter.format(finalAmount) + ' ₽';
+                interestEarnedEl.textContent = formatter.format(interestEarned) + ' ₽';
+                totalContributionsEl.textContent = formatter.format(totalContributions) + ' ₽';
+                
+                // Построение графика
+                renderInvestmentChart(yearlyData);
+            }
+            
+            // Визуализация графика инвестиций
+            function renderInvestmentChart(yearlyData) {
+                // Очистка предыдущего графика
+                chartBarsEl.innerHTML = '';
+                chartLabelsEl.innerHTML = '';
+                
+                if (yearlyData.length === 0) return;
+                
+                // Находим максимальное значение для масштабирования
+                const maxAmount = Math.max(...yearlyData.map(data => data.amount));
+                
+                // Создаем столбцы графика
+                yearlyData.forEach((data, index) => {
+                    // Высота столбца в процентах от максимального значения
+                    const heightPercent = (data.amount / maxAmount) * 100;
+                    
+                    // Создаем элемент столбца
+                    const barEl = document.createElement('div');
+                    barEl.className = 'chart-bar';
+                    barEl.style.height = `${heightPercent}%`;
+                    if (index === 0) {
+                        barEl.classList.add('chart-bar-initial');
+                    }
+                    
+                    // Всплывающая подсказка с информацией
+                    barEl.title = `Год ${data.year}\nСумма: ${data.amount.toFixed(2)} ₽`;
+                    
+                    chartBarsEl.appendChild(barEl);
+                    
+                    // Добавляем подписи для каждого года
+                    const labelEl = document.createElement('div');
+                    labelEl.className = 'chart-label';
+                    labelEl.textContent = `Год ${data.year}`;
+                    chartLabelsEl.appendChild(labelEl);
+                });
+            }
+            
+            // Сохранение расчета инвестиций в историю
+            function saveToInvestmentHistory(initialAmount, interestRate, years, monthlyContribution, finalAmount) {
+                let history = JSON.parse(localStorage.getItem('investmentHistory')) || [];
+                
+                const investment = {
+                    date: new Date().toLocaleString('ru-RU'),
+                    initialAmount,
+                    interestRate,
+                    years,
+                    monthlyContribution,
+                    finalAmount
+                };
+                
+                history.unshift(investment);
+                
+                // Ограничиваем историю последними 10 расчетами
+                if (history.length > 10) {
+                    history = history.slice(0, 10);
+                }
+                
+                localStorage.setItem('investmentHistory', JSON.stringify(history));
+            }
+            
             // Получение названия единицы измерения
             function getUnitName(unitCode, category) {
                 const unitNames = {
@@ -1212,10 +1509,12 @@
                 converterToggle.classList.remove('active');
                 ratesToggle.classList.remove('active');
                 unitsToggle.classList.remove('active');
+                investToggle.classList.remove('active');
                 
                 converterView.classList.remove('view-active');
                 ratesView.classList.remove('view-active');
                 unitsView.classList.remove('view-active');
+                investView.classList.remove('view-active');
                 
                 // Установка активного класса и отображение соответствующего вида
                 if (view === 'converter') {
@@ -1228,6 +1527,9 @@
                 } else if (view === 'units') {
                     unitsToggle.classList.add('active');
                     unitsView.classList.add('view-active');
+                } else if (view === 'invest') {
+                    investToggle.classList.add('active');
+                    investView.classList.add('view-active');
                 }
             }
             
@@ -1236,6 +1538,7 @@
             convertLengthBtn.addEventListener('click', convertLength);
             convertWeightBtn.addEventListener('click', convertWeight);
             convertTempBtn.addEventListener('click', convertTemperature);
+            calculateInvestBtn.addEventListener('click', calculateInvestment);
             
             swapBtn.addEventListener('click', function() {
                 const temp = fromCurrencySelect.value;
@@ -1247,6 +1550,7 @@
             converterToggle.addEventListener('click', () => switchView('converter'));
             ratesToggle.addEventListener('click', () => switchView('rates'));
             unitsToggle.addEventListener('click', () => switchView('units'));
+            investToggle.addEventListener('click', () => switchView('invest'));
             
             supportBtn.addEventListener('click', function() {
                 supportPanel.classList.toggle('active');
